@@ -20,7 +20,7 @@ export default function Home() {
           throw new Error("Failed to fetch movies");
         }
         const data = await response.json();
-        setMovies(data.results || [] );
+        setMovies(data.results || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -29,7 +29,7 @@ export default function Home() {
     };
 
     fetchData();
-  }, []); // Empty dependency array to fetch only once on mount
+  }, []);
 
   const searchMovie = (e) => {
     setMovieSearch(e.target.value);
@@ -42,10 +42,36 @@ export default function Home() {
         )
       : movies;
 
-  // Example language filter function
   const handleFilterLanguage = (e) => {
+    const AllInupt = Array.from(document.getElementsByName('language'));
+    console.log(AllInupt);
+    AllInupt.map((cuuInput) => {
+       if(cuuInput != e.target){
+         cuuInput.checked=false;
+       }
+      }
+    )
+    
     const selectedLanguage = e.target.value;
-    // Implement filtering logic based on language
+    selectedLanguageFiter(selectedLanguage);
+  };
+
+  const selectedLanguageFiter = async (selectedLanguage) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${selectedLanguage}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch movies");
+      }
+      const data = await response.json();
+      setMovies(data.results || []);
+    } catch (error) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,7 +93,7 @@ export default function Home() {
             <div className="text-xl">Languages</div>
             <input
               type="checkbox"
-              value="english"
+              value="en"
               name="language"
               className="w-5 h-5 mr-1.5"
               onChange={handleFilterLanguage}
@@ -76,22 +102,28 @@ export default function Home() {
             <br />
             <input
               type="checkbox"
-              value="hindi"
+              value="hi"
               name="language"
               className="w-5 h-5 mr-1.5"
               onChange={handleFilterLanguage}
             />
             <label>Hindi</label>
             <br />
+            <input
+              type="checkbox"
+              value="fi"
+              name="language"
+              className="w-5 h-5 mr-1.5"
+              onChange={handleFilterLanguage}
+            />
+            <label>French</label>
           </div>
         </div>
         <div className="col-span-9 grid grid-cols-3 gap-3">
           {loading ? (
             "Loading movies..."
           ) : error ? (
-            <div className="col-span-12 text-red-500">
-              Error: {error}
-            </div>
+            <div className="col-span-12 text-red-500">Error: {error}</div>
           ) : filteredMovies.length > 0 ? (
             filteredMovies.map((movieValue, movieId) => (
               <Movie key={movieId} movieData={movieValue} />

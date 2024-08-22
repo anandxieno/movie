@@ -17,8 +17,6 @@ export default function RootLayout({ children }) {
        <Providers store={store}>
          {children}
        </Providers>
-       
-        
         </body>
     </html>
   );

@@ -1,3 +1,4 @@
+'use client'
 const { configureStore } = require("@reduxjs/toolkit");
 import usersReducers from './slice'
 
