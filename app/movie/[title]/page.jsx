@@ -16,6 +16,7 @@ export default function singleMovie() {
   let [movie, setMovie] = useState(null);
   let [moviewcasts, setMoviewcasts] = useState(null);
   let [moviewcrews, setMoviewcrews]= useState(null);
+  let [movieTrailers, setMovieTrailers] = useState([]);
 
   const findMovie = async () => {
     let response = await fetch(
@@ -24,7 +25,10 @@ export default function singleMovie() {
     let MovieData = await response.json();
     setMovie(MovieData.results[0]);
   };
-
+  useEffect(() => {
+    findMovie();
+  }, []);
+  ////// Get Movie Credites /////
   const GetMovieCredits = async () => {
     if (movie) {
       let response = await fetch(
@@ -36,15 +40,30 @@ export default function singleMovie() {
     }
   };
 
-  useEffect(() => {
-    findMovie();
-  }, []);
+ 
+
+  
+
+
+  /////// Get Movie Trailer ////
+  const MovieTrailers = async () => {
+    if (movie) {
+          let response = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=76c5b0ffbfb320a6cae2128a034b4d9d`);
+          let data = await response.json();
+              data = data.results.filter(trailer => trailer.type == "Teaser");
+          setMovieTrailers(data || []);
+          console.log(movieTrailers);
+    }
+          
+       
+  };
 
   useEffect(() => {
     GetMovieCredits();
+    MovieTrailers();
   }, [movie]);
 
-  let attrData = {};
+
 
   return (
     <>
@@ -68,8 +87,19 @@ export default function singleMovie() {
                 <li>Total Vote: {movie.vote_count}</li>
                 <li>Original Lang: {movie.original_language}</li>
                 <li>Total Budget: {movie.budget}</li>
+                <li>Movie Id: {movie.id}</li>
                 
               </ul>
+
+              <div className="movie-trailer mt-5 flex flex-wrap gap-3">
+                 {
+                  movieTrailers.length > 0 ? 
+                                <div className="">{
+                                  <iframe width="750" height="350" src={`https://www.youtube.com/embed/${movieTrailers[0].key}`}></iframe>
+                                }</div>
+                            : "No Teaser Found"
+                 }
+              </div>
             </div>
             <div className="col-span-12">
               <div className="my-2">
