@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Actor from "@/app/components/Actor";
+import Movie from "@/app/components/Movie";
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -17,6 +18,7 @@ export default function singleMovie() {
   let [moviewcasts, setMoviewcasts] = useState(null);
   let [moviewcrews, setMoviewcrews]= useState(null);
   let [movieTrailers, setMovieTrailers] = useState([]);
+  let [similarMovies, setSimilarMovies] = useState([]);
 
   const findMovie = async () => {
     let response = await fetch(
@@ -40,6 +42,26 @@ export default function singleMovie() {
     }
   };
 
+
+  ///// Get Similer Movies /////
+
+  const getSimilarMovies = async () =>{
+     try{
+          let response = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/similar?api_key=76c5b0ffbfb320a6cae2128a034b4d9d`);
+          if(!response.ok){
+             console.error("Throught new error");
+             
+          }
+          let data = await response.json();
+          setSimilarMovies(data.results || []);
+     }catch (err){
+       console.log(err);
+       
+     }finally{
+          
+     } 
+  }
+
  
 
   
@@ -61,6 +83,7 @@ export default function singleMovie() {
   useEffect(() => {
     GetMovieCredits();
     MovieTrailers();
+    getSimilarMovies();
   }, [movie]);
 
 
@@ -142,6 +165,28 @@ export default function singleMovie() {
                     {moviewcrews.map((crew, crewsIndex) => (
                       <SwiperSlide key={crewsIndex}>
                         <Actor ActorData={crew} key={crewsIndex} />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                ) : (
+                  "Loading Casts"
+                )}
+              </div>
+
+              <div className="mt-5">
+                <div className="my-2">
+                  <h2 className="text-xl font-semibold mb-2">Similar Movies:</h2>
+                </div>
+                {similarMovies.length > 0 ? (
+                  <Swiper
+                    slidesPerView={4}
+                    spaceBetween={10}
+                    navigation={true}
+                    modules={[Navigation]}
+                  >
+                    {similarMovies.map((movieValue, movieId) => (
+                      <SwiperSlide key={movieId}>
+                        <Movie key={movieId} movieData={movieValue} />
                       </SwiperSlide>
                     ))}
                   </Swiper>

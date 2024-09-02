@@ -17,7 +17,7 @@ export default function Actor({ActorData}){
     }, [ActorData.original_name])
 
     return (
-        <Link href={`../actor/${LinkPath}`}>
+        <Link href={`../celebrities/${LinkPath}`}>
         <div className="py-2 px-1">
           <figure className="w-[120px] h-[120px] rounded-full mx-auto">
             <Image src={imgPath} width={120} height={120} alt={ActorData.original_name} className="h-full object-cover object-top rounded-full"></Image>

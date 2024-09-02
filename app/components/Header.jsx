@@ -31,11 +31,11 @@ export default function Header() {
               </li>
 
               <li>
-                <Link className="text-gray-500 transition hover:text-gray-500/75" href={'/events'}>Events</Link>
+                <Link className="text-gray-500 transition hover:text-gray-500/75" href={'/celebrities'}>Celebrity's</Link>
               </li>
 
               <li>
-                <Link className="text-gray-500 transition hover:text-gray-500/75" href={'/tv-shows'}>Tv Shows</Link>
+                <Link className="text-gray-500 transition hover:text-gray-500/75" href={'/tvshow'}>Tv Shows</Link>
               </li>
             </ul>
           </nav>
