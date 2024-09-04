@@ -77,7 +77,7 @@ const Actor = () => {
   useEffect(() => {
     window.addEventListener("scroll", handlescroll);
     return () => window.removeEventListener("scroll", handlescroll);
-  });
+  }, []);
 
   useEffect(() => {
       GetActors();

@@ -28,7 +28,7 @@ export default function Actor() {
 
   useEffect(() => {
     getActorData();
-  });
+  }, []);
 
   const getMoviesList = async () => {
     if (actordetail) {
