@@ -11,7 +11,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-export default function singleTvSeries() {
+export default function SingleTvSeries() {
   const perms = useParams();
   let apiKey = process.env.NEXT_PUBLIC_API_KEY;
   let [movie, setMovie] = useState(null);
