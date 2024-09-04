@@ -28,6 +28,7 @@ const Actor = () => {
 
       if (page === 1) {
         setActors(data.results || []);
+        
       } else {
         setActors((prevActors) => [...prevActors, ...data.results]);
       }
@@ -130,10 +131,10 @@ const Actor = () => {
                           height={300}
                           alt={actor.name}
                         ></Image>
-                        <span className="block">{actor.name}</span>
-
+                        <span className="block text-xl font-medium">{actor.name}</span>
+                        <p className="text-lg">{actor.known_for_department}</p>
                         <Link
-                          className="p-2 bg-yellow-600 rounded-md inline-block mt-4"
+                          className="py-2 px-4 bg-green-500 text-white rounded-md inline-block mt-2"
                           href={`/celebrities/${actor.name
                             .split(" ")
                             .join("+")}`}
