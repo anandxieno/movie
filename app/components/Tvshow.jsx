@@ -4,6 +4,7 @@ import Image from "next/image";
 
 const Tvshow = ({tvshowdata}) => {
   return (
+    <Link href={`/tvshow/${tvshowdata.original_name.split(" ").join("+")}`} >
     <div className="border border-gray-600 rounded-md p-3">
       <Image
         src={`https://image.tmdb.org/t/p/w500/${tvshowdata.poster_path}`}
@@ -17,13 +18,9 @@ const Tvshow = ({tvshowdata}) => {
         {tvshowdata.original_name}
       </h2>
       <p>{tvshowdata.overview.substring(0, 150)}</p>
-      <Link
-        href={`/tvshow/${tvshowdata.original_name.split(" ").join("+")}`}
-        className="bg-green-500 text-white px-3 py-1.5 my-2 inline-block text-sm rounded-md"
-      >
-        Read More
-      </Link>
+      <span className="bg-green-500 text-white px-3 py-1.5 my-2 inline-block text-sm rounded-md">Read More</span>
     </div>
+    </Link>
   );
 };
 
