@@ -75,10 +75,7 @@ export default function SingleMovie() {
           let data = await response.json();
               data = data.results.filter(trailer => trailer.type == "Teaser");
           setMovieTrailers(data || []);
-          console.log(movieTrailers);
     }
-          
-       
   };
 
   useEffect(() => {
@@ -100,7 +97,8 @@ export default function SingleMovie() {
                 src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
                 width={400}
                 height={400}
-                alt="aga"
+                alt={movie.title}
+                priority={true}
               ></Image>
             </div>
             <div className="col-span-8">

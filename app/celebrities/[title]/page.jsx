@@ -53,10 +53,11 @@ export default function Actor() {
             <div className="col-span-4">
               <div className="w-[300px] h-[300px] object-cover">
                 <Image
-                  src={`https://image.tmdb.org/t/p/w500/${actordetail.profile_path}`}
-                  width={400}
-                  height={300}
+                  src={`${actordetail.profile_path ? `https://image.tmdb.org/t/p/w500/${actordetail.profile_path}` : 'https://via.placeholder.com/300x300' }`}
+                  width={500}
+                  height={400}
                   alt={actordetail.name}
+                  priority ={true}
                   className="object-contain w-full h-full object-top"
                 ></Image>
               </div>
@@ -92,8 +93,8 @@ export default function Actor() {
                     modules={[Navigation]}
                   >
                     {moviesList.map((MovieVal, MovieIndex) => (
-                      <SwiperSlide>
-                        <Movie key={MovieIndex} movieData={MovieVal} />
+                      <SwiperSlide key={MovieIndex} >
+                        <Movie movieData={MovieVal} />
                       </SwiperSlide>
                     ))}
                   </Swiper>
