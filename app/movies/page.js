@@ -184,7 +184,7 @@ export default function Movies() {
 
 
           <div className="mt-5">
-            <div className="text-base mb-2">Languages</div>
+            <div className="text-xl mb-2">Languages</div>
             <div className="flex flex-col gap-2">
               <label>
                 <input
@@ -219,7 +219,7 @@ export default function Movies() {
             </div>
 
             <div className="geners mt-5">
-              <div className="text-base mb-2">Geners</div>
+              <div className="text-xl mb-2">Geners</div>
               <div className="flex flex-col gap-2">
                 <label>
                   <input

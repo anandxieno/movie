@@ -191,7 +191,7 @@ const TvShow = () => {
         <div className="grid grid-cols-12 mt-10">
           <div className="col-span-4">
           <div className="mt-5">
-            <div className="text-base mb-2">Languages</div>
+            <div className="text-xl mb-2">Languages</div>
             <div className="flex flex-col gap-2">
               <label>
                 <input
@@ -226,7 +226,7 @@ const TvShow = () => {
             </div>
 
             <div className="geners mt-5">
-              <div className="text-base mb-2">Geners </div>
+              <div className="text-xl mb-2">Geners </div>
               <div className="flex flex-col gap-2">
                 <label>
                   <input

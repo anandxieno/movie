@@ -5,3 +5,7 @@
 .container{
   @apply mx-auto max-w-screen-xl gap-8 px-4 sm:px-6 lg:px-8;
 }
+
+label{@apply text-base font-medium;
+  input{@apply mr-1 size-4;}
+} 
