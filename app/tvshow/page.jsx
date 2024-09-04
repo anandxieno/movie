@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Image from "next/image";
 import Link from "next/link";
+import Tvshow from "../components/Tvshow";
 
 const TvShow = () => {
    
@@ -297,51 +298,11 @@ const TvShow = () => {
             <div className="grid grid-cols-3 gap-2">
               {ListingShow.length > 0
                 ? search.length == "" ? ListingShow.map((showData, showIndex) => (
-                    <div className="border border-gray-600 rounded-md p-3" key={showIndex}>
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w500/${showData.poster_path}`}
-                        className="rounded-sm"
-                        width={500}
-                        height={400}
-                        alt={showData.original_name}
-                      ></Image>
-                      <h2 className="mt-2 mb-1 text-lg font-semibold capitalize">
-                        {showData.original_name}
-                      </h2>
-                      <p>{showData.overview.substring(0, 150)}</p>
-                      <Link
-                        href={`/tvshow/${showData.original_name.split(" ").join('+')}`}
-                        className="bg-green-500 text-white px-3 py-1.5 my-2 inline-block text-sm rounded-md"
-                      >
-                        Read More
-                      </Link>
-                    </div>
+                    <Tvshow tvshowdata={showData} key={showIndex}/>
                   )) : 
-
                   ListingShow.filter((listshow) => listshow.original_name.toLowerCase().includes(search) ).map((showData, showIndex) => (
-                    <div className="border border-gray-600 rounded-md p-3" key={showIndex}>
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w500/${showData.poster_path}`}
-                        className="rounded-sm"
-                        width={500}
-                        height={400}
-                        alt={showData.original_name}
-                      ></Image>
-                      <h2 className="mt-2 mb-1 text-lg font-semibold capitalize">
-                        {showData.original_name}
-                      </h2>
-                      <p>{showData.overview.substring(0, 150)}</p>
-                      <Link
-                        href={`/tvshow/${showData.original_name.split(" ").join('+')}`}
-                        className="bg-green-500 text-white px-3 py-1.5 my-2 inline-block text-sm rounded-md"
-                      >
-                        Read More
-                      </Link>
-                    </div>
+                      <Tvshow tvshowdata={showData} key={showIndex}/>
                   ))
-
-
-
                 : ""}
             </div>
           </div>

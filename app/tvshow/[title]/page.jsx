@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import Tvshow from "@/app/components/Tvshow";
 
 export default function SingleTvSeries() {
   const perms = useParams();
@@ -17,7 +18,7 @@ export default function SingleTvSeries() {
   let [movie, setMovie] = useState(null);
   let [moviewcasts, setMoviewcasts] = useState(null);
   let [moviewcrews, setMoviewcrews] = useState(null);
-  let [similarMovies, setSimilarMovies] = useState([]);
+  let [similarShows, setSimilarShows] = useState([]);
 
   const findMovie = async () => {
     let response = await fetch(
@@ -43,7 +44,7 @@ export default function SingleTvSeries() {
 
   ///// Get Similer Movies /////
 
-  const getSimilarMovies = async () => {
+  const getsimilarShows = async () => {
     try {
       let response = await fetch(
         `https://api.themoviedb.org/3/tv/${movie.id}/similar?api_key=${apiKey}`
@@ -52,7 +53,7 @@ export default function SingleTvSeries() {
         console.error("Throught new error");
       }
       let data = await response.json();
-      setSimilarMovies(data.results || []);
+      setSimilarShows(data.results || []);
       
     } catch (err) {
       console.log(err);
@@ -62,7 +63,7 @@ export default function SingleTvSeries() {
 
   useEffect(() => {
     GetMovieCredits();
-    getSimilarMovies();
+    getsimilarShows();
   }, [movie]);
 
   return (
@@ -200,36 +201,16 @@ export default function SingleTvSeries() {
                     Similar Tv Series:
                   </h2>
                 </div>
-                {similarMovies.length > 0 ? (
+                {similarShows.length > 0 ? (
                   <Swiper
                     slidesPerView={4}
                     spaceBetween={10}
                     navigation={true}
                     modules={[Navigation]}
                   >
-                    {similarMovies.map((movieValue, movieId) => (
-                      <SwiperSlide key={movieId}>
-                        <div className="border border-gray-600 rounded-md p-3">
-                          <Image
-                            src={`https://image.tmdb.org/t/p/w500/${movieValue.poster_path}`}
-                            className="rounded-sm"
-                            width={500}
-                            height={400}
-                            alt=""
-                          ></Image>
-                          <h2 className="mt-2 mb-1 text-lg font-semibold capitalize">
-                            {movieValue.name}
-                          </h2>
-                          <p>{movieValue.overview.substring(0, 150)}</p>
-                          <Link
-                            href={`/tvshow/${movieValue.original_name
-                                .split(" ")
-                                .join("+")}`}
-                            className="bg-green-500 text-white px-3 py-1.5 my-2 inline-block text-sm rounded-md"
-                          >
-                            Read More
-                          </Link>
-                        </div>
+                    {similarShows.map((show, showIndex) => (
+                      <SwiperSlide key={showIndex}>
+                        <Tvshow tvshowdata={show} />
                       </SwiperSlide>
                     ))}
                   </Swiper>

@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import Header from "../components/Header";
 import Image from "next/image";
 import Link from "next/link";
+import Celebritie from "../components/Celebritie";
 
 const Actor = () => {
   let apiKey = process.env.NEXT_PUBLIC_API_KEY;
@@ -123,47 +124,12 @@ const Actor = () => {
                       actor.name.toLowerCase().includes(search.toLowerCase())
                     )
                     .map((actor, actorIndex) => (
-                      <div key={actorIndex}>
-                        <Image
-                          src={`https://image.tmdb.org/t/p/w500${actor.profile_path}`}
-                          className="rounded-sm"
-                          width={200}
-                          height={300}
-                          alt={actor.name}
-                        ></Image>
-                        <span className="block text-xl font-medium">{actor.name}</span>
-                        <p className="text-lg">{actor.known_for_department}</p>
-                        <Link
-                          className="py-2 px-4 bg-green-500 text-white rounded-md inline-block mt-2"
-                          href={`/celebrities/${actor.name
-                            .split(" ")
-                            .join("+")}`}
-                        >
-                          See Detail
-                        </Link>
-                      </div>
+                      <Celebritie CelebritieData={actor} key={actorIndex} />
                     ))
                 ) : (
                   actors.map((actor, actorIndex) => (
-                    <div key={actorIndex}>
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w500${actor.profile_path}`}
-                        className="rounded-sm"
-                        width={200}
-                        height={300}
-                        alt={actor.name}
-                      ></Image>
-                      <span className="block">{actor.name}</span>
-
-                      <Link
-                        className="p-2 bg-yellow-600 rounded-md inline-block mt-4"
-                        href={`/celebrities/${actor.name
-                          .split(" ")
-                          .join("+")}`}
-                      >
-                        See Detail
-                      </Link>
-                    </div>
+                  
+                    <Celebritie CelebritieData={actor} key={actorIndex} />
                   ))
                 )
               ) : (
