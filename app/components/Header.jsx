@@ -19,15 +19,11 @@ export default function Header() {
           </svg>
         </Link>
 
-        <div className="flex flex-1 items-center justify-end md:justify-between">
-          <nav aria-label="Global" className="hidden md:block">
+        <div className="flex flex-1 items-center justify-between">
+          <nav aria-label="Global" className="">
             <ul className="flex items-center gap-6 text-sm">
               <li>
                 <Link className="text-gray-500 transition hover:text-gray-500/75" href={'/movies'}>Movies</Link>
-              </li>
-
-              <li>
-                <Link className="text-gray-500 transition hover:text-gray-500/75" href={'/stream'}>Stream</Link>
               </li>
 
               <li>
@@ -40,7 +36,7 @@ export default function Header() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="items-center gap-4 hidden md:flex">
             <div className="sm:flex sm:gap-4">
               <a
                 className="block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700"

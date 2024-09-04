@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 
 import Movie from "../components/Movie";
-import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../redux/slice";
 import Header from "../components/Header";
 
 export default function Movies() {
   let apiKey = process.env.NEXT_PUBLIC_API_KEY;
+
+  const [sorting, setSorting] = useState(null);
+  const [sortable, setSortableItem] = useState([])
   const [loading, setLoading] = useState(true);
   const [movies, setMovies] = useState("");
   const [movieSearch, setMovieSearch] = useState("");
@@ -43,8 +44,8 @@ export default function Movies() {
   const filteredMovies =
     movieSearch !== ""
       ? movies.filter((movie) =>
-          movie.title.toLowerCase().includes(movieSearch.toLowerCase())
-        )
+        movie.title.toLowerCase().includes(movieSearch.toLowerCase())
+      )
       : movies;
 
   /////// Filter data based on Language //////
@@ -59,7 +60,7 @@ export default function Movies() {
           );
         } else {
           response = await fetch(
-            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=${activeLanguages}&with_genres=${activeGener}&page=${page}`
+            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${activeLanguages}&with_genres=${activeGener}&page=${page}`
           );
         }
         if (!response.ok) {
@@ -91,7 +92,7 @@ export default function Movies() {
           );
         } else {
           response = await fetch(
-            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=${activeLanguages}&with_genres=${activeGener}&page=${page}`
+            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${activeLanguages}&with_genres=${activeGener}&page=${page}`
           );
         }
         if (!response.ok) {
@@ -132,43 +133,55 @@ export default function Movies() {
     filterMovieGeners(activeGener);
   }, [page]);
 
+  ///// Handle Sorting /////
 
-  ///////////// Get redux value /////////////
-
-
-
-  //////// set redux value ///////
-  const dispatch = useDispatch();
-  
-  // Function to dispatch a static value
-  function handleAddUser() {
-    // Dispatching a static value "John Doe"
-    dispatch(addUser("John Doe"));
+  const HandleSorting = (e) => {
+    let getValue = e.target.value;
+    setSorting(getValue);
   }
-  useEffect(()=>{
-    handleAddUser();
-    console.log("one time");
-    
-  }, [])
-  let selector = useSelector((state) => state.usersData);
-  useEffect(()=>{
-    console.log(selector);
- }, [selector])
+
+  useEffect(() => {
+    if (sorting !== null) {
+      switch (sorting) {
+        case "name":
+          setSortableItem(filteredMovies.sort((movie1, movie2) => {
+            let movieA = movie1.title.toLowerCase();
+            let movieB = movie2.title.toLowerCase();
+            if (movieA < movieB) { return -1; }
+            else if (movieA > movieB) { return 1; }
+            else { return 0; }
+          }));
+          break;
+        case "popularity":
+          setSortableItem(filteredMovies.sort((movie1, movie2) => {
+            if (movie1.popularity < movie2.popularity) { return -1; }
+            else if (movie1.popularity > movie2.popularity) { return 1; }
+            else { return 0; }
+          }));
+          break;
+
+        case "release-date":
+          setSortableItem(filteredMovies.sort((movie1, movie2) => {
+            if (movie1.release_date < movie2.release_date) { return 1; }
+            else if (movie1.release_date > movie2.release_date) { return -1; }
+            else { return 0; }
+          }));
+          break;
+
+        default:
+        // default code block;
+      }
+      setSorting("");
+    }
+  }, [sorting])
+
 
   return (
     <>
-      <Header/>
+      <Header />
       <div className="movie-listing container grid grid-cols-12 mt-10 gap-3">
-        <div className="col-span-3">
-          <div>
-            <span className="text-xl font-semibold">Search</span>
-            <input
-              type="search"
-              className="border py-1 px-2 focus:outline-none"
-              onChange={searchMovie}
-              value={movieSearch}
-            />
-          </div>
+        <div className="col-span-12 md:col-span-3">
+
 
           <div className="mt-5">
             <div className="text-base mb-2">Languages</div>
@@ -248,18 +261,46 @@ export default function Movies() {
             </div>
           </div>
         </div>
-        <div className="col-span-9 grid grid-cols-3 gap-3">
-          {loading ? (
-            "Loading movies..."
-          ) : error ? (
-            <div className="col-span-12 text-red-500">Error: {error}</div>
-          ) : filteredMovies.length > 0 ? (
-            filteredMovies.map((movieValue, movieId) => (
-              <Movie key={movieId} movieData={movieValue} />
-            ))
-          ) : (
-            "No Data Found"
-          )}
+        <div className="col-span-12 md:col-span-9">
+          <div className="flex justify-between flex-col sm:flex-row sm:items-center pb-5">
+            <div>
+              <select
+                className="border w-48 p-1"
+                onChange={(e) => {
+                  HandleSorting(e);
+                }}
+              >
+                <option>Sort</option>
+                <option value="name">Name</option>
+                <option value="popularity">Popularity</option>
+                <option value="release-date">Release Date</option>
+              </select>
+            </div>
+            <div>
+              <span className="text-xl font-semibold">Search : </span>
+              <input
+                type="search"
+                className="border py-1 px-2 focus:outline-none"
+                onChange={searchMovie}
+                value={movieSearch}
+              />
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {loading ? (
+              "Loading movies..."
+            ) : error ? (
+              <div className="col-span-12 text-red-500">Error: {error}</div>
+            ) : filteredMovies.length > 0 ? (
+              filteredMovies.map((movieValue, movieId) => (
+                <Movie key={movieId} movieData={movieValue} />
+              ))
+            ) : (
+              "No Data Found"
+            )}
+          </div>
+
         </div>
       </div>
     </>

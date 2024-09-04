@@ -12,6 +12,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 
 export default function Actor() {
+  let apiKey = process.env.NEXT_PUBLIC_API_KEY;
   let perms = useParams();
 
   let [actordetail, setActordetail] = useState(null);
@@ -19,7 +20,7 @@ export default function Actor() {
 
   const getActorData = async () => {
     let response = await fetch(
-      `https://api.themoviedb.org/3/search/person?query=${perms.title}&api_key=76c5b0ffbfb320a6cae2128a034b4d9d`
+      `https://api.themoviedb.org/3/search/person?query=${perms.title}&api_key=${apiKey}`
     );
     let resData = await response.json();
     setActordetail(resData.results[0]);
@@ -32,7 +33,7 @@ export default function Actor() {
   const getMoviesList = async () => {
     if (actordetail) {
       let response = await fetch(
-        `https://api.themoviedb.org/3/person/${actordetail.id}/movie_credits?api_key=76c5b0ffbfb320a6cae2128a034b4d9d`
+        `https://api.themoviedb.org/3/person/${actordetail.id}/movie_credits?api_key=${apiKey}`
       );
       let MoviesRes = await response.json();
       setMoviesList(MoviesRes.cast);
@@ -56,7 +57,7 @@ export default function Actor() {
                   width={400}
                   height={300}
                   alt={actordetail.name}
-                  className="object-cover w-full h-full object-top"
+                  className="object-contain w-full h-full object-top"
                 ></Image>
               </div>
             </div>

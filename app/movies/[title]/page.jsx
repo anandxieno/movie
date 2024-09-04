@@ -14,6 +14,7 @@ import "swiper/css/navigation";
 
 export default function singleMovie() {
   const perms = useParams();
+  let apiKey = process.env.NEXT_PUBLIC_API_KEY;
   let [movie, setMovie] = useState(null);
   let [moviewcasts, setMoviewcasts] = useState(null);
   let [moviewcrews, setMoviewcrews]= useState(null);
@@ -22,7 +23,7 @@ export default function singleMovie() {
 
   const findMovie = async () => {
     let response = await fetch(
-      `https://api.themoviedb.org/3/search/movie?query=${perms.title}&api_key=76c5b0ffbfb320a6cae2128a034b4d9d`
+      `https://api.themoviedb.org/3/search/movie?query=${perms.title}&api_key=${apiKey}`
     );
     let MovieData = await response.json();
     setMovie(MovieData.results[0]);
@@ -34,7 +35,7 @@ export default function singleMovie() {
   const GetMovieCredits = async () => {
     if (movie) {
       let response = await fetch(
-        `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=76c5b0ffbfb320a6cae2128a034b4d9d`
+        `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${apiKey}`
       );
       let MovieCreditData = await response.json();
       setMoviewcasts(MovieCreditData.cast);
@@ -47,7 +48,7 @@ export default function singleMovie() {
 
   const getSimilarMovies = async () =>{
      try{
-          let response = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/similar?api_key=76c5b0ffbfb320a6cae2128a034b4d9d`);
+          let response = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/similar?api_key=${apiKey}`);
           if(!response.ok){
              console.error("Throught new error");
              
@@ -70,7 +71,7 @@ export default function singleMovie() {
   /////// Get Movie Trailer ////
   const MovieTrailers = async () => {
     if (movie) {
-          let response = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=76c5b0ffbfb320a6cae2128a034b4d9d`);
+          let response = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${apiKey}`);
           let data = await response.json();
               data = data.results.filter(trailer => trailer.type == "Teaser");
           setMovieTrailers(data || []);
@@ -117,8 +118,8 @@ export default function singleMovie() {
               <div className="movie-trailer mt-5 flex flex-wrap gap-3">
                  {
                   movieTrailers.length > 0 ? 
-                                <div className="">{
-                                  <iframe width="750" height="350" src={`https://www.youtube.com/embed/${movieTrailers[0].key}`}></iframe>
+                                <div className="w-full h-auto">{
+                                  <iframe className="w-full h-[500px]" src={`https://www.youtube.com/embed/${movieTrailers[0].key}`}></iframe>
                                 }</div>
                             : "No Teaser Found"
                  }
