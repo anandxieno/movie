@@ -53,7 +53,6 @@ export default function SingleTvSeries() {
       }
       let data = await response.json();
       setSimilarMovies(data.results || []);
-      console.log(data);
       
     } catch (err) {
       console.log(err);
@@ -77,7 +76,8 @@ export default function SingleTvSeries() {
                 src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
                 width={400}
                 height={400}
-                alt="aga"
+                alt={movie.name}
+                priority={true}
               ></Image>
             </div>
             <div className="col-span-8">
