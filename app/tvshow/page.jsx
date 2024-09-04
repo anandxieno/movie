@@ -225,7 +225,7 @@ const TvShow = () => {
             </div>
 
             <div className="geners mt-5">
-              <div className="text-base mb-2">Geners</div>
+              <div className="text-base mb-2">Geners </div>
               <div className="flex flex-col gap-2">
                 <label>
                   <input
