@@ -15,8 +15,12 @@ const TvShow = () => {
   const [selectedLanguageValue, setSelectedLanguageValue] = useState("");
   const [generFilter, setGenerFilter] = useState(false);
   const [selectedGenerValue, setSelectedGenerValue] = useState("");
-  const AlllanguageCheckboxs = Array.from(document.getElementsByName("language"));
-  const AllgenersCheckboxs = Array.from(document.getElementsByName("geners"));
+  const [AllgenersCheckboxs, setAllgenersCheckboxes] =useState([]);
+  const [AlllanguageCheckboxs, setAlllanguageCheckboxes] = useState([]);
+  useEffect(() => {
+    setAlllanguageCheckboxes(Array.from(document.getElementsByName("language")));
+    setAllgenersCheckboxes(Array.from(document.getElementsByName("geners")));
+  }, []);
 
   const getShowList = async () => {
     let response = await fetch(
