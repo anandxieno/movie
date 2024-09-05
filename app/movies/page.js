@@ -19,7 +19,7 @@ export default function Movies() {
   const [selectedLanguageValue, setSelectedLanguageValue] = useState("");
   const [generFilter, setGenerFilter] = useState(false);
   const [selectedGenerValue, setSelectedGenerValue] = useState("");
-  const [AllgenersCheckboxs, setAllgenersCheckboxes] =useState([]);
+  const [AllgenersCheckboxs, setAllgenersCheckboxes] = useState([]);
   const [AlllanguageCheckboxs, setAlllanguageCheckboxes] = useState([]);
   useEffect(() => {
     setAlllanguageCheckboxes(Array.from(document.getElementsByName("language")));
@@ -27,11 +27,12 @@ export default function Movies() {
   }, []);
 
   const fetchData = async () => {
-      const response = await fetch(
-        `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&page=${page}`
-      );
-      const data = await response.json();
-      setMovies([...movies, ...data.results]);
+    const response = await fetch(
+      `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&page=${page}`
+    );
+    const data = await response.json();
+    setMovies([...movies, ...data.results]);
+
   };
   useEffect(() => {
     fetchData();
@@ -55,7 +56,7 @@ export default function Movies() {
 
   const HandleLanguagges = (e) => {
     let currentItem = e.target;
-    
+
     AlllanguageCheckboxs.forEach((cuuBox) => {
       if (cuuBox !== currentItem) {
         return (cuuBox.checked = false);
@@ -74,7 +75,7 @@ export default function Movies() {
 
   const FilterSelectedLanguage = async () => {
     if (languageFilter) {
-     
+
       let response;
       if (generFilter) {
         response = await fetch(
@@ -86,14 +87,24 @@ export default function Movies() {
         );
       }
       let data = await response.json();
-      setListingMovies(data.results || []);
-   
+      // setListingMovies(data.results || []);
+      if (page === 1) {
+        setListingMovies(data.results || []);
+      } else {
+        setListingMovies((prevShow) => [...ListingMovies, ...data.results]);
+      }
+
     } else if (generFilter) {
       let response = await fetch(
         `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${selectedGenerValue}&page=${page}`
       );
       let data = await response.json();
-      setListingMovies(data.results || []);
+      // setListingMovies(data.results || []);
+      if (page === 1) {
+        setListingMovies(data.results || []);
+      } else {
+        setListingMovies((prevShow) => [...ListingMovies, ...data.results]);
+      }
     } else {
       setListingMovies(movies);
     }
@@ -106,7 +117,7 @@ export default function Movies() {
 
   const HendleGenerFilter = async (e) => {
     let currentItem = e.target;
-    
+
     AllgenersCheckboxs.forEach((cuuBox) => {
       if (cuuBox !== currentItem) {
         return (cuuBox.checked = false);
@@ -137,13 +148,23 @@ export default function Movies() {
         );
       }
       let data = await response.json();
-      setListingMovies(data.results || []);
+      // setListingMovies(data.results || []);
+      if (page === 1) {
+        setListingMovies(data.results || []);
+      } else {
+        setListingMovies((prevShow) => [...prevShow, ...data.results]);
+      }
     } else if (languageFilter) {
       let response = await fetch(
         `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${selectedLanguageValue}`
       );
       let data = await response.json();
-      setListingMovies(data.results || []);
+      // setListingMovies(data.results || []);
+      if (page === 1) {
+        setListingMovies(data.results || []);
+        } else {
+          setListingMovies((prevShow) => [...prevShow, ...data.results]);
+        }
     } else {
       setListingMovies(movies);
     }
@@ -155,18 +176,18 @@ export default function Movies() {
 
 
 
- ////// Reset Filter ///
- function resetAllFilter(){
-  setLanguageFilter(false);
-  setGenerFilter(false);
-  AlllanguageCheckboxs.forEach((cuuBox) => {return (cuuBox.checked = false)});
-  AllgenersCheckboxs.forEach((cuuBox) => {return (cuuBox.checked = false);});
-  setListingMovies(movies);
- }
+  ////// Reset Filter ///
+  function resetAllFilter() {
+    setLanguageFilter(false);
+    setGenerFilter(false);
+    AlllanguageCheckboxs.forEach((cuuBox) => { return (cuuBox.checked = false) });
+    AllgenersCheckboxs.forEach((cuuBox) => { return (cuuBox.checked = false); });
+    setListingMovies(movies);
+  }
 
-///////////////////////////////////////
-////////// Filter Ends ///////////////
-////////////////////////////////////////
+  ///////////////////////////////////////
+  ////////// Filter Ends ///////////////
+  ////////////////////////////////////////
 
 
 
@@ -213,9 +234,13 @@ export default function Movies() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-    FilterSelectedLanguage();
-    FilterSelectedGeners();
+    if (languageFilter) {
+      FilterSelectedLanguage();
+    } else if (generFilter) {
+      FilterSelectedGeners();
+    } else {
+      fetchData();
+    }
   }, [page]);
 
   ///// Handle Sorting /////
@@ -268,7 +293,7 @@ export default function Movies() {
     setListingMovies(movies);
   }, [movies]);
 
-  
+
 
 
   return (
@@ -288,7 +313,7 @@ export default function Movies() {
                   id=""
                   value="en"
                   // onChange={(e) => setActiveLanguages(e.target.value)}
-                   onChange={(e) => HandleLanguagges(e)}
+                  onChange={(e) => HandleLanguagges(e)}
                 />
                 English
               </label>
@@ -299,7 +324,7 @@ export default function Movies() {
                   id=""
                   value="hi"
                   // onChange={(e) => setActiveLanguages(e.target.value)}
-                   onChange={(e) => HandleLanguagges(e)}
+                  onChange={(e) => HandleLanguagges(e)}
                 />
                 Hindi
               </label>
@@ -310,7 +335,7 @@ export default function Movies() {
                   id=""
                   value="fi"
                   // onChange={(e) => setActiveLanguages(e.target.value)}
-                   onChange={(e) => HandleLanguagges(e)}
+                  onChange={(e) => HandleLanguagges(e)}
                 />
                 French
               </label>
@@ -363,8 +388,8 @@ export default function Movies() {
             </div>
 
             <div className="mt-5">
-                 <button className={`bg-red-500 text-white py-2 px-4 text-sm ${(languageFilter || generFilter) ? "" : "hidden" }`} onClick={resetAllFilter} >Reset Filter</button>
-              </div>
+              <button className={`bg-red-500 text-white py-2 px-4 text-sm ${(languageFilter || generFilter) ? "" : "hidden"}`} onClick={resetAllFilter} >Reset Filter</button>
+            </div>
           </div>
         </div>
         <div className="col-span-12 md:col-span-9">
@@ -394,16 +419,16 @@ export default function Movies() {
           </div>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {ListingMovies.length > 0 ? 
-              searchMovie.length > 0 ? 
-              ListingMovies.filter((ListingMovie) => ListingMovie.title.toLowerCase().includes(movieSearch.toLocaleLowerCase())).map((movieValue, movieId) => (
-                <Movie key={movieId} movieData={movieValue} />
-              )) : ListingMovies.map((movieValue, movieId) => (
-                <Movie key={movieId} movieData={movieValue} />
-              ))
-             :
+            {ListingMovies.length > 0 ?
+              searchMovie.length > 0 ?
+                ListingMovies.filter((ListingMovie) => ListingMovie.title.toLowerCase().includes(movieSearch.toLocaleLowerCase())).map((movieValue, movieId) => (
+                  <Movie key={movieId} movieData={movieValue} />
+                )) : ListingMovies.map((movieValue, movieId) => (
+                  <Movie key={movieId} movieData={movieValue} />
+                ))
+              :
               "Loading data"
-          }
+            }
           </div>
 
         </div>

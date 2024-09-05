@@ -71,13 +71,22 @@ const TvShow = () => {
         );
       }
       let data = await response.json();
-      setListingShow(data.results || []);
+      if (page === 1) {
+        setListingShow(data.results || []);
+      } else {
+        setListingShow((prevShow) => [...ListingShow, ...data.results]);
+      }
     } else if (generFilter) {
       let response = await fetch(
         `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_genres=${selectedGenerValue}&page=${page}`
       );
       let data = await response.json();
-      setListingShow(data.results || []);
+      // setListingShow(data.results || []);
+      if (page === 1) {
+        setListingShow(data.results || []);
+      } else {
+        setListingShow((prevShow) => [...ListingShow, ...data.results]);
+      }
     } else {
       setListingShow(allshow);
     }
@@ -121,13 +130,23 @@ const TvShow = () => {
         );
       }
       let data = await response.json();
-      setListingShow(data.results || []);
+      // setListingShow(data.results || []);
+      if (page === 1) {
+        setListingShow(data.results || []);
+      } else {
+        setListingShow((prevShow) => [...ListingShow, ...data.results]);
+      }
     } else if (languageFilter) {
       let response = await fetch(
         `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_original_language=${selectedLanguageValue}`
       );
       let data = await response.json();
-      setListingShow(data.results || []);
+      // setListingShow(data.results || []);
+      if (page === 1) {
+        setListingShow(data.results || []);
+      } else {
+        setListingShow((prevShow) => [...ListingShow, ...data.results]);
+      }
     } else {
       setListingShow(allshow);
     }
