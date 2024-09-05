@@ -9,29 +9,25 @@ export default function Movies() {
 
   const [sorting, setSorting] = useState(null);
   const [sortable, setSortableItem] = useState([])
-  const [loading, setLoading] = useState(true);
   const [movies, setMovies] = useState("");
+  const [ListingMovies, setListingMovies] = useState([])
   const [movieSearch, setMovieSearch] = useState("");
-  const [error, setError] = useState(null);
-  const [activeLanguages, setActiveLanguages] = useState(null);
-  const [activeGener, setActiveGener] = useState(null);
   const [page, setPage] = useState(1);
 
+  // let [ListingShow, setListingMovies] = useState([]);
+  const [languageFilter, setLanguageFilter] = useState(false);
+  const [selectedLanguageValue, setSelectedLanguageValue] = useState("");
+  const [generFilter, setGenerFilter] = useState(false);
+  const [selectedGenerValue, setSelectedGenerValue] = useState("");
+  const AlllanguageCheckboxs = Array.from(document.getElementsByName("language"));
+  const AllgenersCheckboxs = Array.from(document.getElementsByName("geners"));
+
   const fetchData = async () => {
-    try {
       const response = await fetch(
         `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&page=${page}`
       );
-      if (!response.ok) {
-        throw new Error("Failed to fetch movies");
-      }
       const data = await response.json();
       setMovies([...movies, ...data.results]);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
   };
   useEffect(() => {
     fetchData();
@@ -43,74 +39,159 @@ export default function Movies() {
 
   const filteredMovies =
     movieSearch !== ""
-      ? movies.filter((movie) =>
+      ? ListingMovies.filter((movie) =>
         movie.title.toLowerCase().includes(movieSearch.toLowerCase())
       )
-      : movies;
+      : ListingMovies;
 
+
+  /////////////////////////////////////////////
   /////// Filter data based on Language //////
-  const selectedLanguageFilter = async () => {
-    if (activeLanguages !== null) {
-      try {
-        setLoading(true);
-        let response;
-        if (activeGener == null) {
-          response = await fetch(
-            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${activeLanguages}&page=${page}`
-          );
-        } else {
-          response = await fetch(
-            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${activeLanguages}&with_genres=${activeGener}&page=${page}`
-          );
-        }
-        if (!response.ok) {
-          throw new Error("Failed to fetch movies");
-        }
-        const data = await response.json();
-        setMovies(data.results || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  /////////////////////////////////////////////
+
+  const HandleLanguagges = (e) => {
+    let currentItem = e.target;
+    
+    AlllanguageCheckboxs.forEach((cuuBox) => {
+      if (cuuBox !== currentItem) {
+        return (cuuBox.checked = false);
       }
+    });
+
+    if (!e.currentTarget.checked) {
+      currentItem.checked = false;
+      setSelectedLanguageValue("");
+    } else {
+      currentItem.checked = true;
+      setSelectedLanguageValue(currentItem.value);
+    }
+    setLanguageFilter(currentItem.checked);
+  };
+
+  const FilterSelectedLanguage = async () => {
+    if (languageFilter) {
+     
+      let response;
+      if (generFilter) {
+        response = await fetch(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${selectedLanguageValue}&with_genres=${selectedGenerValue}&page=${page}`
+        );
+      } else {
+        response = await fetch(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${selectedLanguageValue}&page=${page}`
+        );
+      }
+      let data = await response.json();
+      setListingMovies(data.results || []);
+   
+    } else if (generFilter) {
+      let response = await fetch(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${selectedGenerValue}&page=${page}`
+      );
+      let data = await response.json();
+      setListingMovies(data.results || []);
+    } else {
+      setListingMovies(movies);
+    }
+  };
+  useEffect(() => {
+    FilterSelectedLanguage();
+  }, [selectedLanguageValue]);
+
+  ////// Filter Data based on Geners /////////
+
+  const HendleGenerFilter = async (e) => {
+    let currentItem = e.target;
+    
+    AllgenersCheckboxs.forEach((cuuBox) => {
+      if (cuuBox !== currentItem) {
+        return (cuuBox.checked = false);
+      }
+    });
+
+    if (!e.currentTarget.checked) {
+      currentItem.checked = false;
+      setSelectedGenerValue("");
+    } else {
+      currentItem.checked = true;
+      setSelectedGenerValue(currentItem.value);
+    }
+    // currentItem.checked = !currentItem.checked;
+    setGenerFilter(currentItem.checked);
+  };
+
+  const FilterSelectedGeners = async () => {
+    if (generFilter) {
+      let response;
+      if (languageFilter) {
+        response = await fetch(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${selectedLanguageValue}&with_genres=${selectedGenerValue}&page=${page}`
+        );
+      } else {
+        response = await fetch(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${selectedGenerValue}&page=${page}`
+        );
+      }
+      let data = await response.json();
+      setListingMovies(data.results || []);
+    } else if (languageFilter) {
+      let response = await fetch(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${selectedLanguageValue}`
+      );
+      let data = await response.json();
+      setListingMovies(data.results || []);
+    } else {
+      setListingMovies(movies);
     }
   };
 
   useEffect(() => {
-    selectedLanguageFilter(activeLanguages);
-  }, [activeLanguages]);
+    FilterSelectedGeners();
+  }, [selectedGenerValue]);
 
-  ///// Handle Filter by geners ////////
-  const filterMovieGeners = async () => {
-    if (activeGener != null) {
-      try {
-        setLoading(true);
-        let response;
-        if (activeLanguages == null) {
-          response = await fetch(
-            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${activeGener}&page=${page}`
-          );
-        } else {
-          response = await fetch(
-            `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_original_language=${activeLanguages}&with_genres=${activeGener}&page=${page}`
-          );
-        }
-        if (!response.ok) {
-          throw new Error("Failed to fetch movies");
-        }
-        let data = await response.json();
-        setMovies(data.results || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
 
-  useEffect(() => {
-    filterMovieGeners(activeGener);
-  }, [activeGener]);
+
+ ////// Reset Filter ///
+ function resetAllFilter(){
+  setLanguageFilter(false);
+  setGenerFilter(false);
+  AlllanguageCheckboxs.forEach((cuuBox) => {return (cuuBox.checked = false)});
+  AllgenersCheckboxs.forEach((cuuBox) => {return (cuuBox.checked = false);});
+  setListingMovies(movies);
+ }
+
+///////////////////////////////////////
+////////// Filter Ends ///////////////
+////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /////////////  Infinite scroll ///////////
   function handlescroll() {
@@ -129,8 +210,8 @@ export default function Movies() {
 
   useEffect(() => {
     fetchData();
-    selectedLanguageFilter(activeLanguages);
-    filterMovieGeners(activeGener);
+    FilterSelectedLanguage();
+    FilterSelectedGeners();
   }, [page]);
 
   ///// Handle Sorting /////
@@ -144,7 +225,7 @@ export default function Movies() {
     if (sorting !== null) {
       switch (sorting) {
         case "name":
-          setSortableItem(filteredMovies.sort((movie1, movie2) => {
+          setSortableItem(ListingMovies.sort((movie1, movie2) => {
             let movieA = movie1.title.toLowerCase();
             let movieB = movie2.title.toLowerCase();
             if (movieA < movieB) { return -1; }
@@ -153,7 +234,7 @@ export default function Movies() {
           }));
           break;
         case "popularity":
-          setSortableItem(filteredMovies.sort((movie1, movie2) => {
+          setSortableItem(ListingMovies.sort((movie1, movie2) => {
             if (movie1.popularity < movie2.popularity) { return -1; }
             else if (movie1.popularity > movie2.popularity) { return 1; }
             else { return 0; }
@@ -161,7 +242,7 @@ export default function Movies() {
           break;
 
         case "release-date":
-          setSortableItem(filteredMovies.sort((movie1, movie2) => {
+          setSortableItem(ListingMovies.sort((movie1, movie2) => {
             if (movie1.release_date < movie2.release_date) { return 1; }
             else if (movie1.release_date > movie2.release_date) { return -1; }
             else { return 0; }
@@ -174,6 +255,16 @@ export default function Movies() {
       setSorting("");
     }
   }, [sorting])
+
+  // useEffect(() => {
+  //   setListingMovies(filteredMovies);
+  // }, [searchMovie]);
+
+  useEffect(() => {
+    setListingMovies(movies);
+  }, [movies]);
+
+  
 
 
   return (
@@ -188,31 +279,34 @@ export default function Movies() {
             <div className="flex flex-col gap-2">
               <label>
                 <input
-                  type="radio"
+                  type="checkbox"
                   name="language"
                   id=""
                   value="en"
-                  onChange={(e) => setActiveLanguages(e.target.value)}
+                  // onChange={(e) => setActiveLanguages(e.target.value)}
+                   onChange={(e) => HandleLanguagges(e)}
                 />
                 English
               </label>
               <label>
                 <input
-                  type="radio"
+                  type="checkbox"
                   name="language"
                   id=""
                   value="hi"
-                  onChange={(e) => setActiveLanguages(e.target.value)}
+                  // onChange={(e) => setActiveLanguages(e.target.value)}
+                   onChange={(e) => HandleLanguagges(e)}
                 />
                 Hindi
               </label>
               <label>
                 <input
-                  type="radio"
+                  type="checkbox"
                   name="language"
                   id=""
                   value="fi"
-                  onChange={(e) => setActiveLanguages(e.target.value)}
+                  // onChange={(e) => setActiveLanguages(e.target.value)}
+                   onChange={(e) => HandleLanguagges(e)}
                 />
                 French
               </label>
@@ -223,42 +317,50 @@ export default function Movies() {
               <div className="flex flex-col gap-2">
                 <label>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name="geners"
-                    id="28"
-                    onChange={(e) => setActiveGener(e.target.id)}
+                    value="28"
+                    // onChange={(e) => setActiveGener(e.target.id)}
+                    onChange={(e) => HendleGenerFilter(e)}
                   />
                   Action
                 </label>
                 <label>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name="geners"
-                    id="12"
-                    onChange={(e) => setActiveGener(e.target.id)}
+                    value="12"
+                    // onChange={(e) => setActiveGener(e.target.id)}
+                    onChange={(e) => HendleGenerFilter(e)}
                   />
                   Adventure
                 </label>
                 <label>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name="geners"
-                    id="16"
-                    onChange={(e) => setActiveGener(e.target.id)}
+                    value="16"
+                    // onChange={(e) => setActiveGener(e.target.id)}
+                    onChange={(e) => HendleGenerFilter(e)}
                   />
                   Animation
                 </label>
                 <label>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name="geners"
-                    id="35"
-                    onChange={(e) => setActiveGener(e.target.id)}
+                    value="35"
+                    // onChange={(e) => setActiveGener(e.target.id)}
+                    onChange={(e) => HendleGenerFilter(e)}
                   />
                   Comedy
                 </label>
               </div>
             </div>
+
+            <div className="mt-5">
+                 <button className={`bg-red-500 text-white py-2 px-4 text-sm ${(languageFilter || generFilter) ? "" : "hidden" }`} onClick={resetAllFilter} >Reset Filter</button>
+              </div>
           </div>
         </div>
         <div className="col-span-12 md:col-span-9">
@@ -288,17 +390,16 @@ export default function Movies() {
           </div>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {loading ? (
-              "Loading movies..."
-            ) : error ? (
-              <div className="col-span-12 text-red-500">Error: {error}</div>
-            ) : filteredMovies.length > 0 ? (
-              filteredMovies.map((movieValue, movieId) => (
+            {ListingMovies.length > 0 ? 
+              searchMovie.length > 0 ? 
+              ListingMovies.filter((ListingMovie) => ListingMovie.title.toLowerCase().includes(movieSearch.toLocaleLowerCase())).map((movieValue, movieId) => (
+                <Movie key={movieId} movieData={movieValue} />
+              )) : ListingMovies.map((movieValue, movieId) => (
                 <Movie key={movieId} movieData={movieValue} />
               ))
-            ) : (
-              "No Data Found"
-            )}
+             :
+              "Loading data"
+          }
           </div>
 
         </div>

@@ -1,22 +1,22 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
-import Image from "next/image";
-import Link from "next/link";
 import Tvshow from "../components/Tvshow";
 
 const TvShow = () => {
-   
   let apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
-  const [error, setError] = useState(null);
+  
   let [allshow, setAllShow] = useState([]);
-  let [page, setPage] = useState(1)
+  let [page, setPage] = useState(1);
   let [search, setSearch] = useState("");
-  let [ListingShow, setListingShow] = useState([])
-  let [activeFilter, setactiveFilter] = useState(false);
-  const [activeLanguages, setActiveLanguages] = useState(null);
-  const [activeGener, setActiveGener] = useState(null);
+  let [ListingShow, setListingShow] = useState([]);
+  const [languageFilter, setLanguageFilter] = useState(false);
+  const [selectedLanguageValue, setSelectedLanguageValue] = useState("");
+  const [generFilter, setGenerFilter] = useState(false);
+  const [selectedGenerValue, setSelectedGenerValue] = useState("");
+  const AlllanguageCheckboxs = Array.from(document.getElementsByName("language"));
+  const AllgenersCheckboxs = Array.from(document.getElementsByName("geners"));
 
   const getShowList = async () => {
     let response = await fetch(
@@ -25,111 +25,128 @@ const TvShow = () => {
 
     let data = await response.json();
 
-    if(page === 1){
+    if (page === 1) {
       setAllShow(data.results || []);
-    }else{
+    } else {
       setAllShow((prevShow) => [...prevShow, ...data.results]);
     }
   };
+  /////////////////////////////////////////////
+  /////// Filter data based on Language //////
+  /////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-   /////// Filter data based on Language //////
-   const selectedLanguageFilter = async () => {
-    if (activeLanguages !== null) {
-      try {
-      
-        let response;
-        if (activeGener == null) {
-          response = await fetch(
-            `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_original_language=${activeLanguages}&page=${page}`
-          );
-        } else {
-          response = await fetch(
-            `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_original_language=${activeLanguages}&with_genres=${activeGener}&page=${page}`
-          );
-        }
-        if (!response.ok) {
-          throw new Error("Failed to fetch movies");
-        }
-        const data = await response.json();
-        setListingShow(data.results || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-      
+  const HandleLanguagges = (e) => {
+    let currentItem = e.target;
+    
+    AlllanguageCheckboxs.forEach((cuuBox) => {
+      if (cuuBox !== currentItem) {
+        return (cuuBox.checked = false);
       }
+    });
+
+    if (!e.currentTarget.checked) {
+      currentItem.checked = false;
+      setSelectedLanguageValue("");
+    } else {
+      currentItem.checked = true;
+      setSelectedLanguageValue(currentItem.value);
+    }
+    setLanguageFilter(currentItem.checked);
+  };
+
+  const FilterSelectedLanguage = async () => {
+    if (languageFilter) {
+      let response;
+      if (generFilter) {
+        response = await fetch(
+          `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_original_language=${selectedLanguageValue}&with_genres=${selectedGenerValue}&page=${page}`
+        );
+      } else {
+        response = await fetch(
+          `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_original_language=${selectedLanguageValue}`
+        );
+      }
+      let data = await response.json();
+      setListingShow(data.results || []);
+    } else if (generFilter) {
+      let response = await fetch(
+        `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_genres=${selectedGenerValue}&page=${page}`
+      );
+      let data = await response.json();
+      setListingShow(data.results || []);
+    } else {
+      setListingShow(allshow);
+    }
+  };
+  useEffect(() => {
+    FilterSelectedLanguage();
+  }, [selectedLanguageValue]);
+
+  ////// Filter Data based on Geners /////////
+
+  const HendleGenerFilter = async (e) => {
+    let currentItem = e.target;
+    
+    AllgenersCheckboxs.forEach((cuuBox) => {
+      if (cuuBox !== currentItem) {
+        return (cuuBox.checked = false);
+      }
+    });
+
+    if (!e.currentTarget.checked) {
+      currentItem.checked = false;
+      setSelectedGenerValue("");
+    } else {
+      currentItem.checked = true;
+      setSelectedGenerValue(currentItem.value);
+    }
+    // currentItem.checked = !currentItem.checked;
+    setGenerFilter(currentItem.checked);
+  };
+
+  const FilterSelectedGeners = async () => {
+    if (generFilter) {
+      let response;
+      if (languageFilter) {
+        response = await fetch(
+          `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_original_language=${selectedLanguageValue}&with_genres=${selectedGenerValue}&page=${page}`
+        );
+      } else {
+        response = await fetch(
+          `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_genres=${selectedGenerValue}&page=${page}`
+        );
+      }
+      let data = await response.json();
+      setListingShow(data.results || []);
+    } else if (languageFilter) {
+      let response = await fetch(
+        `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_original_language=${selectedLanguageValue}`
+      );
+      let data = await response.json();
+      setListingShow(data.results || []);
+    } else {
+      setListingShow(allshow);
     }
   };
 
   useEffect(() => {
-    selectedLanguageFilter(activeLanguages);
-  }, [activeLanguages]);
-
-  ///// Handle Filter by geners ////////
-  const filterMovieGeners = async () => {
-    
-    if (activeGener !== null) {
-      try {
-       
-        let response;
-        if (activeLanguages == null) {
-          response = await fetch(
-            `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_genres=${activeGener}&page=${page}`
-          );
-          
-        } else {
-          response = await fetch(
-            `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_original_language=${activeLanguages}&with_genres=${activeGener}&page=${page}`
-          );
-        }
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch movies");
-        }
-        let data = await response.json();
-        setListingShow(data.results || []);
-       
-        
-      } catch (err) {
-        setError(err.message);
-      } finally {
-      }
-    }else{
-      
-    }
-  };
-
-  useEffect(() => {
-    filterMovieGeners(activeGener);
-    
-    
-  }, [activeGener]);
+    FilterSelectedGeners();
+  }, [selectedGenerValue]);
 
 
 
+ ////// Reset Filter ///
+ function resetAllFilter(){
+  setLanguageFilter(false);
+  setGenerFilter(false);
+  AlllanguageCheckboxs.forEach((cuuBox) => {return (cuuBox.checked = false)});
+  AllgenersCheckboxs.forEach((cuuBox) => {return (cuuBox.checked = false);});
+  setListingShow(allshow);
+ }
 
-
-
-
-
-
-
-
-
-
-
+///////////////////////////////////////
+////////// Filter Ends ///////////////
+////////////////////////////////////////
 
 
 
@@ -147,13 +164,16 @@ const TvShow = () => {
       SortableItem = [...ListingShow].sort((person1, person2) => {
         const nameA = person1.name.toUpperCase();
         const nameB = person2.name.toUpperCase();
-        if (nameA < nameB) {return -1;}
-        if (nameA > nameB) {return 1;}
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
         return 0;
       });
       setListingShow(SortableItem);
     }
-    
   };
 
   /// Handle Search ////
@@ -162,27 +182,33 @@ const TvShow = () => {
     setSearch(Getvalue);
   };
 
-  ////// Infinite scroll /////// 
-  const HandleScroll = ()=>{
-      if(window.innerHeight + document.documentElement.scrollTop >= document.documentElement.scrollHeight  ){
-           setPage((prev) => prev + 1);
-      }
-  }
+  ////// Infinite scroll ///////
+  const HandleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop >=
+      document.documentElement.scrollHeight
+    ) {
+      setPage((prev) => prev + 1);
+    }
+  };
 
   useEffect(() => {
     getShowList();
 
-    window.addEventListener('scroll', HandleScroll)
-    return ()=> window.removeEventListener('scroll', HandleScroll);
+    window.addEventListener("scroll", HandleScroll);
+    return () => window.removeEventListener("scroll", HandleScroll);
   }, []);
 
   useEffect(() => {
     getShowList();
-}, [page]);
+  }, [page]);
 
- useEffect(()=>{
-  setListingShow(allshow)
- }, [allshow])
+  useEffect(() => {
+    setListingShow(allshow);
+  }, [allshow]);
+
+
+
 
   return (
     <>
@@ -190,87 +216,97 @@ const TvShow = () => {
       <div className="container">
         <div className="grid grid-cols-12 mt-10">
           <div className="col-span-4">
-          <div className="mt-5">
-            <div className="text-xl mb-2">Languages</div>
-            <div className="flex flex-col gap-2">
-              <label>
-                <input
-                  type="radio"
-                  name="language"
-                  id=""
-                  value="en"
-                  onChange={(e) => setActiveLanguages(e.target.value)}
-                />
-                English
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="language"
-                  id=""
-                  value="hi"
-                  onChange={(e) => setActiveLanguages(e.target.value)}
-                />
-                Hindi
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="language"
-                  id=""
-                  value="fi"
-                  onChange={(e) => setActiveLanguages(e.target.value)}
-                />
-                French
-              </label>
-            </div>
-
-            <div className="geners mt-5">
-              <div className="text-xl mb-2">Geners </div>
+            <div className="mt-5">
+              <div className="text-xl mb-2">Languages</div>
               <div className="flex flex-col gap-2">
                 <label>
                   <input
-                    type="radio"
-                    name="geners"
-                    id="10759"
-                    onChange={(e) => setActiveGener(e.target.id)
-                    }
+                    type="checkbox"
+                    name="language"
+                    id=""
+                    value="en"
+                    // onChange={(e) => setActiveLanguages(e.target.value)}
+                    onChange={(e) => HandleLanguagges(e)}
                   />
-                  Action & Adventure
+                  English
                 </label>
                 <label>
                   <input
-                    type="radio"
-                    name="geners"
-                    id="18"
-                    onChange={(e) => setActiveGener(e.target.id)}
+                    type="checkbox"
+                    name="language"
+                    id=""
+                    value="hi"
+                    // onChange={(e) => setActiveLanguages(e.target.value)}
+                    onChange={(e) => HandleLanguagges(e)}
                   />
-                  Drama
+                  Hindi
                 </label>
                 <label>
                   <input
-                    type="radio"
-                    name="geners"
-                    id="16"
-                    onChange={(e) => setActiveGener(e.target.id)}
+                    type="checkbox"
+                    name="language"
+                    id=""
+                    value="fi"
+                    // onChange={(e) => setActiveLanguages(e.target.value)}
+                    onChange={(e) => HandleLanguagges(e)}
                   />
-                  Animation
+                  French
                 </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="geners"
-                    id="35"
-                    onChange={(e) => setActiveGener(e.target.id)}
-                  />
-                  Comedy
-                </label>
+              </div>
+
+              <div className="geners mt-5">
+                <div className="text-xl mb-2">Geners </div>
+                <div className="flex flex-col gap-2">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="geners"
+                      value="10759"
+                      // onChange={(e) => setActiveGener(e.target.id)}
+                      onChange={(e) => HendleGenerFilter(e)}
+                    />
+                    Action & Adventure
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="geners"
+                      value="18"
+                      // onChange={(e) => setActiveGener(e.target.id)}
+                      onChange={(e) => HendleGenerFilter(e)}
+                    />
+                    Drama
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="geners"
+                      value="16"
+                      // onChange={(e) => setActiveGener(e.target.id)}
+                      onChange={(e) => HendleGenerFilter(e)}
+                    />
+                    Animation
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="geners"
+                      value="35"
+                      // onChange={(e) => setActiveGener(e.target.id)}
+                      onChange={(e) => HendleGenerFilter(e)}
+                    />
+                    Comedy
+                  </label>
+                </div>
+              </div>
+
+              <div className="mt-5">
+                 <button className={`bg-red-500 text-white py-2 px-4 text-sm ${(languageFilter || generFilter) ? "" : "hidden" }`} onClick={resetAllFilter} >Reset Filter</button>
               </div>
             </div>
           </div>
-          </div>
           <div className="col-span-8 ">
-          <div className="sortListing flex flex-col sm:flex-row gap-3 justify-between sm:items-center py-4">
+            <div className="sortListing flex flex-col sm:flex-row gap-3 justify-between sm:items-center py-4">
               <select
                 className="border w-48 p-1"
                 onChange={(e) => {
@@ -297,12 +333,15 @@ const TvShow = () => {
             </div>
             <div className="grid grid-cols-3 gap-2">
               {ListingShow.length > 0
-                ? search.length == "" ? ListingShow.map((showData, showIndex) => (
-                    <Tvshow tvshowdata={showData} key={showIndex}/>
-                  )) : 
-                  ListingShow.filter((listshow) => listshow.original_name.toLowerCase().includes(search) ).map((showData, showIndex) => (
-                      <Tvshow tvshowdata={showData} key={showIndex}/>
-                  ))
+                ? search.length == ""
+                  ? ListingShow.map((showData, showIndex) => (
+                      <Tvshow tvshowdata={showData} key={showIndex} />
+                    ))
+                  : ListingShow.filter((listshow) =>
+                      listshow.original_name.toLowerCase().includes(search)
+                    ).map((showData, showIndex) => (
+                      <Tvshow tvshowdata={showData} key={showIndex} />
+                    ))
                 : ""}
             </div>
           </div>
